@@ -1,0 +1,65 @@
+{
+  "annotations": {
+    "changelogDate": "20251110230559"
+  },
+  "applications": "*",
+  "documentation": "Entidad que registra una Venta (exitosa o fallida)\\nrealizada por un usuario.",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "ventaCatedraId",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "fechaVenta",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "precioVenta",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "resultado",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "descripcion",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "cantidadAsientos",
+      "fieldType": "Integer"
+    }
+  ],
+  "name": "Venta",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "asientoVendido",
+      "otherEntityRelationshipName": "venta",
+      "relationshipName": "asientos",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "documentation": "Se agrega 'with builtInEntity' para linkear\\na la entidad User de JHipster.",
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    },
+    {
+      "documentation": "Una Venta debe estar asociada a un Evento local.",
+      "otherEntityName": "evento",
+      "relationshipName": "evento",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}
