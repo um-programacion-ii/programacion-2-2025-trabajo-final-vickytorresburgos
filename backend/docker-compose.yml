@@ -1,0 +1,15 @@
+# ---------------------------------------------------------------------------------
+# Este es el Docker Compose principal para el desarrollo del backend.
+# Spring Boot ('spring-boot-docker-compose') lo iniciará automáticamente.
+# ---------------------------------------------------------------------------------
+services:
+  mysql:
+    image: mysql:8.2.0
+    container_name: trabajofinal-mysql # Nombre del contenedor
+    environment:
+      - MYSQL_DATABASE=trabajoFinal
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=caching_sha2_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
