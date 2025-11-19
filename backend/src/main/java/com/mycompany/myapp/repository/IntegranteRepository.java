@@ -1,5 +1,6 @@
 package com.mycompany.myapp.repository;
 
+import com.mycompany.myapp.domain.Evento;
 import com.mycompany.myapp.domain.Integrante;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface IntegranteRepository extends JpaRepository<Integrante, Long> {}
+public interface IntegranteRepository extends JpaRepository<Integrante, Long> {
+    void deleteByEvento(Evento evento);
+}
