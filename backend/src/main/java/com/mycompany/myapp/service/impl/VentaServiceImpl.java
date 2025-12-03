@@ -13,9 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Service Implementation for managing {@link com.mycompany.myapp.domain.Venta}.
- */
+
 @Service
 @Transactional
 public class VentaServiceImpl implements VentaService {
@@ -80,5 +78,11 @@ public class VentaServiceImpl implements VentaService {
     public void delete(Long id) {
         LOG.debug("Request to delete Venta : {}", id);
         ventaRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VentaDTO> findByUserIsCurrentUser(Pageable pageable) {
+        return ventaRepository.findByUserIsCurrentUser(pageable).map(ventaMapper::toDto);
     }
 }

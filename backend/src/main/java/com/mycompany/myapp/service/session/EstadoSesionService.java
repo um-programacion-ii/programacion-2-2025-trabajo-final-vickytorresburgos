@@ -1,6 +1,4 @@
 package com.mycompany.myapp.service.session;
-import com.mycompany.myapp.domain.User;
-import com.mycompany.myapp.service.UserService;
 import java.time.Duration;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -27,14 +25,11 @@ public class EstadoSesionService {
     private static final Duration SESION_EXPIRATION = Duration.ofMinutes(30);
 
     private final RedisTemplate<String, EstadoSesionUsuario> sesionRedisTemplate;
-    private final UserService userService;
 
     public EstadoSesionService(
-        @Qualifier("sesionRedisTemplate") RedisTemplate<String, EstadoSesionUsuario> sesionRedisTemplate,
-        UserService userService
+        @Qualifier("sesionRedisTemplate") RedisTemplate<String, EstadoSesionUsuario> sesionRedisTemplate
     ) {
         this.sesionRedisTemplate = sesionRedisTemplate;
-        this.userService = userService;
     }
 
     /**
@@ -85,7 +80,6 @@ public class EstadoSesionService {
                 return new EstadoSesionUsuario();
             }
 
-            // Si se encontró, refrescamos la expiración (actividad) [cite: 126]
             sesionRedisTemplate.expire(redisKey, SESION_EXPIRATION);
             return estado;
 

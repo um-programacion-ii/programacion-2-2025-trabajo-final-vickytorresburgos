@@ -1,9 +1,10 @@
 package com.mycompany.myapp.web.rest.session;
 
-import com.mycompany.myapp.service.session.AsientoTemporal;
+import com.mycompany.myapp.service.session.AsientoSeleccionado;
 import com.mycompany.myapp.service.session.EstadoSesionService;
 import com.mycompany.myapp.service.session.EstadoSesionUsuario;
 import com.mycompany.myapp.service.session.PasosCompra;
+import com.mycompany.myapp.web.rest.session.dto.CargarNombresDTO;
 import com.mycompany.myapp.web.rest.session.dto.SeleccionarAsientoDTO;
 import com.mycompany.myapp.web.rest.session.dto.SeleccionarEventoDTO;
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.HashSet;
 
 /**
  * REST controller para gestionar el estado de la sesión del usuario.
@@ -38,6 +41,18 @@ public class EstadoSesionResource {
         EstadoSesionUsuario estadoActual = estadoSesionService.cargarEstado();
         return ResponseEntity.ok(estadoActual);
     }
+
+    /**
+     * {@code POST /logout} : Limpia la sesión de Redis del usuario.
+     *
+     * @return la {@link ResponseEntity} con estado {@code 200 (OK)}.
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        estadoSesionService.limpiarEstado();
+        return ResponseEntity.ok().build();
+    }
+
 
     /**
      * {@code POST /seleccionar-evento} : Actualiza el evento que el usuario
@@ -70,20 +85,16 @@ public class EstadoSesionResource {
 
         EstadoSesionUsuario estadoActual = estadoSesionService.cargarEstado();
 
-        // Validación: No se pueden seleccionar más de 4 asientos [cite: 59, 164]
         if (estadoActual.getAsientosSeleccionados().size() >= 4) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se pueden seleccionar más de 4 asientos");
         }
 
-        // Validación: No se puede agregar si no se ha seleccionado un evento
         if (estadoActual.getPasoActual() == PasosCompra.LISTANDO_EVENTOS || estadoActual.getEventoIdActual() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe seleccionar un evento antes de agregar asientos");
         }
 
-        // Creamos el AsientoTemporal (DTO vs Objeto de Sesión)
-        AsientoTemporal asiento = new AsientoTemporal(dto.fila(), dto.columna());
+        AsientoSeleccionado asiento = new AsientoSeleccionado(dto.fila(), dto.columna(), null);
 
-        // El 'Set' maneja automáticamente que no se agreguen duplicados
         estadoActual.getAsientosSeleccionados().add(asiento);
         estadoActual.setPasoActual(PasosCompra.SELECCIONANDO_ASIENTOS);
 
@@ -100,15 +111,35 @@ public class EstadoSesionResource {
 
         EstadoSesionUsuario estadoActual = estadoSesionService.cargarEstado();
 
-        AsientoTemporal asiento = new AsientoTemporal(dto.fila(), dto.columna());
+        AsientoSeleccionado asiento = new AsientoSeleccionado(dto.fila(), dto.columna(), null);
 
-        // Quitamos el asiento
         estadoActual.getAsientosSeleccionados().remove(asiento);
 
-        // Si quitamos el último asiento, volvemos al paso anterior
         if (estadoActual.getAsientosSeleccionados().isEmpty()) {
             estadoActual.setPasoActual(PasosCompra.SELECCIONANDO_EVENTOS);
         }
+
+        estadoSesionService.guardarEstado(estadoActual);
+        return ResponseEntity.ok(estadoActual);
+    }
+
+    /**
+     * {@code POST /cargar-nombres} : Recibe la lista de asientos con nombres
+     * y actualiza la sesión.
+     *
+     */
+    @PostMapping("/cargar-nombres")
+    public ResponseEntity<EstadoSesionUsuario> cargarNombres(@RequestBody CargarNombresDTO dto) {
+        log.debug("REST request para cargar nombres en {} asientos", dto.asientos().size());
+
+        EstadoSesionUsuario estadoActual = estadoSesionService.cargarEstado();
+
+        if (estadoActual.getPasoActual() == PasosCompra.LISTANDO_EVENTOS || estadoActual.getEventoIdActual() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe seleccionar un evento antes de cargar nombres");
+        }
+
+        estadoActual.setAsientosSeleccionados(new HashSet<>(dto.asientos()));
+        estadoActual.setPasoActual(PasosCompra.CARGANDO_NOMBRES);
 
         estadoSesionService.guardarEstado(estadoActual);
         return ResponseEntity.ok(estadoActual);

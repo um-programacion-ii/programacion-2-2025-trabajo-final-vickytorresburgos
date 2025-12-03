@@ -1,4 +1,4 @@
-package com.mycompany.myapp.web.rest;
+package com.mycompany.myapp.web.rest.admin;
 
 import com.mycompany.myapp.config.Constants;
 import com.mycompany.myapp.domain.User;

@@ -5,9 +5,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-/**
- * Service Interface for managing {@link com.mycompany.myapp.domain.Venta}.
- */
+
 public interface VentaService {
     /**
      * Save a venta.
@@ -55,4 +53,12 @@ public interface VentaService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    /**
+     * Get all the ventas for the current user.
+     *
+     * @param pageable the pagination information.
+     * @return the list of entities.
+     */
+    Page<VentaDTO> findByUserIsCurrentUser(Pageable pageable);
 }

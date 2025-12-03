@@ -1,6 +1,7 @@
 package com.mycompany.myapp.web.rest;
 
 import com.mycompany.myapp.repository.EventoRepository;
+import com.mycompany.myapp.service.AsientoMapaService;
 import com.mycompany.myapp.service.EventoService;
 import com.mycompany.myapp.service.dto.EventoDTO;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
@@ -39,12 +40,13 @@ public class EventoResource {
     private String applicationName;
 
     private final EventoService eventoService;
-
     private final EventoRepository eventoRepository;
+    private final AsientoMapaService asientoMapaService;
 
-    public EventoResource(EventoService eventoService, EventoRepository eventoRepository) {
+    public EventoResource(EventoService eventoService, EventoRepository eventoRepository, AsientoMapaService asientoMapaService) {
         this.eventoService = eventoService;
         this.eventoRepository = eventoRepository;
+        this.asientoMapaService = asientoMapaService;
     }
 
     /**
@@ -176,4 +178,17 @@ public class EventoResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
+    /**
+     * {@code GET /eventos/{id}/asientos} : Obtiene el mapa de asientos del evento.
+     * Esto llama al Proxy para obtener los datos de Redis Cátedra[cite: 696, 711].
+     *
+     * @param id El ID de Cátedra del evento.
+     * @return El String JSON con el mapa de asientos.
+     */
+    @GetMapping("/{id}/asientos")
+    public ResponseEntity<String> getMapaAsientos(@PathVariable("id") Long id) {
+        String mapaAsientosJson = asientoMapaService.obtenerMapaAsientosDeCatedra(id);
+        return ResponseEntity.ok(mapaAsientosJson);
+    }
+
 }

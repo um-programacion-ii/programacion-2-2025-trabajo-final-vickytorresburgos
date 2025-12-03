@@ -29,10 +29,11 @@ public class SesionRedisConfiguration {
     }
 
     /**
-     * Define un 'conector' (RedisTemplate) específico para nuestra
+     * Define un 'conector' (RedisTemplate) específico para la
      * clase EstadoSesionUsuario.
      *
      * @param connectionFactory La conexión a Redis (gestionada por Spring).
+     * @param objectMapper    JHipster ya provee un ObjectMapper para JSON.
      * @return Un RedisTemplate configurado.
      */
     @Bean("sesionRedisTemplate")
@@ -51,9 +52,8 @@ public class SesionRedisConfiguration {
         );
         template.setValueSerializer(jsonSerializer);
 
-        template.setValueSerializer(new JdkSerializationRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new JdkSerializationRedisSerializer());
+        template.setHashValueSerializer(jsonSerializer);
         template.afterPropertiesSet();
         return template;
     }
