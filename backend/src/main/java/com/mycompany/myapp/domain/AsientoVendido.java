@@ -1,6 +1,7 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mycompany.myapp.venta.infrastructure.persistence.entity.VentaEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -40,7 +41,7 @@ public class AsientoVendido implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "asientos", "user", "evento" }, allowSetters = true)
-    private Venta venta;
+    private VentaEntity venta;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -109,15 +110,15 @@ public class AsientoVendido implements Serializable {
         this.estado = estado;
     }
 
-    public Venta getVenta() {
+    public VentaEntity getVenta() {
         return this.venta;
     }
 
-    public void setVenta(Venta venta) {
+    public void setVenta(VentaEntity venta) {
         this.venta = venta;
     }
 
-    public AsientoVendido venta(Venta venta) {
+    public AsientoVendido venta(VentaEntity venta) {
         this.setVenta(venta);
         return this;
     }

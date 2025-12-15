@@ -1,5 +1,7 @@
 package com.mycompany.myapp.domain;
 
+import com.mycompany.myapp.evento.infrastructure.persistence.entity.EventoEntity;
+
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,8 +13,8 @@ public class EventoTestSamples {
     private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
     private static final AtomicInteger intCount = new AtomicInteger(random.nextInt() + (2 * Short.MAX_VALUE));
 
-    public static Evento getEventoSample1() {
-        return new Evento()
+    public static EventoEntity getEventoSample1() {
+        return new EventoEntity()
             .id(1L)
             .eventoCatedraId(1L)
             .titulo("titulo1")
@@ -26,8 +28,8 @@ public class EventoTestSamples {
             .eventoTipoDescripcion("eventoTipoDescripcion1");
     }
 
-    public static Evento getEventoSample2() {
-        return new Evento()
+    public static EventoEntity getEventoSample2() {
+        return new EventoEntity()
             .id(2L)
             .eventoCatedraId(2L)
             .titulo("titulo2")
@@ -41,8 +43,8 @@ public class EventoTestSamples {
             .eventoTipoDescripcion("eventoTipoDescripcion2");
     }
 
-    public static Evento getEventoRandomSampleGenerator() {
-        return new Evento()
+    public static EventoEntity getEventoRandomSampleGenerator() {
+        return new EventoEntity()
             .id(longCount.incrementAndGet())
             .eventoCatedraId(longCount.incrementAndGet())
             .titulo(UUID.randomUUID().toString())

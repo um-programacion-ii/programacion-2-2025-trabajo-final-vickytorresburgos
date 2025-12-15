@@ -1,6 +1,4 @@
 package com.mycompany.myapp.service.session;
-import com.mycompany.myapp.domain.User;
-import com.mycompany.myapp.service.UserService;
 import java.time.Duration;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -15,10 +13,6 @@ import org.springframework.stereotype.Service;
 public class EstadoSesionService {
 
     private final Logger log = LoggerFactory.getLogger(EstadoSesionService.class);
-
-    /**
-     * El prefijo que usamos para las claves en Redis, para evitar colisiones.
-     */
     private static final String KEY_PREFIX = "sesion_usuario:";
 
     /**
@@ -27,14 +21,11 @@ public class EstadoSesionService {
     private static final Duration SESION_EXPIRATION = Duration.ofMinutes(30);
 
     private final RedisTemplate<String, EstadoSesionUsuario> sesionRedisTemplate;
-    private final UserService userService;
 
     public EstadoSesionService(
-        @Qualifier("sesionRedisTemplate") RedisTemplate<String, EstadoSesionUsuario> sesionRedisTemplate,
-        UserService userService
+        @Qualifier("sesionRedisTemplate") RedisTemplate<String, EstadoSesionUsuario> sesionRedisTemplate
     ) {
         this.sesionRedisTemplate = sesionRedisTemplate;
-        this.userService = userService;
     }
 
     /**
@@ -49,7 +40,7 @@ public class EstadoSesionService {
             return;
         }
 
-        String login = loginOpt.get();
+        String login = loginOpt.orElseThrow();
         String redisKey = KEY_PREFIX + login;
 
         try {
@@ -73,7 +64,7 @@ public class EstadoSesionService {
             return new EstadoSesionUsuario();
         }
 
-        String login = loginOpt.get();
+        String login = loginOpt.orElseThrow();
         String redisKey = KEY_PREFIX + login;
 
         try {
@@ -85,7 +76,6 @@ public class EstadoSesionService {
                 return new EstadoSesionUsuario();
             }
 
-            // Si se encontró, refrescamos la expiración (actividad) [cite: 126]
             sesionRedisTemplate.expire(redisKey, SESION_EXPIRATION);
             return estado;
 
@@ -105,8 +95,8 @@ public class EstadoSesionService {
             return;
         }
 
-        String redisKey = KEY_PREFIX + loginOpt.get();
-        log.debug("Limpiando estado en Redis para {}.", loginOpt.get());
+        String redisKey = KEY_PREFIX + loginOpt.orElseThrow();
+        log.debug("Limpiando estado en Redis para {}.", loginOpt.orElseThrow());
         sesionRedisTemplate.delete(redisKey);
     }
 

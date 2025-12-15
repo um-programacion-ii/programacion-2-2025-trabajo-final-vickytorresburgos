@@ -9,7 +9,7 @@ public class EstadoSesionUsuario implements Serializable {
     private static final long serialVersionUID = 1L;
     private PasosCompra pasoActual;
     private Long eventoIdActual;
-    private Set<AsientoTemporal> asientosSeleccionados;
+    private Set<AsientoSeleccionado> asientosSeleccionados;
 
     public EstadoSesionUsuario() {
         this.pasoActual = PasosCompra.LISTANDO_EVENTOS;
@@ -32,11 +32,11 @@ public class EstadoSesionUsuario implements Serializable {
         this.eventoIdActual = eventoIdActual;
     }
 
-    public Set<AsientoTemporal> getAsientosSeleccionados() {
+    public Set<AsientoSeleccionado> getAsientosSeleccionados() {
         return asientosSeleccionados;
     }
 
-    public void setAsientosSeleccionados(Set<AsientoTemporal> asientosSeleccionados) {
+    public void setAsientosSeleccionados(Set<AsientoSeleccionado> asientosSeleccionados) {
         this.asientosSeleccionados = asientosSeleccionados;
     }
 }

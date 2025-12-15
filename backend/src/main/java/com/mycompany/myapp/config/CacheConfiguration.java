@@ -5,6 +5,10 @@ import java.util.concurrent.TimeUnit;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
+
+import com.mycompany.myapp.evento.infrastructure.persistence.entity.EventoEntity;
+import com.mycompany.myapp.evento.infrastructure.persistence.entity.IntegranteEntity;
+import com.mycompany.myapp.venta.infrastructure.persistence.entity.VentaEntity;
 import org.hibernate.cache.jcache.ConfigSettings;
 import org.redisson.Redisson;
 import org.redisson.config.ClusterServersConfig;
@@ -18,7 +22,6 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
-import org.springframework.context.annotation.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import tech.jhipster.config.JHipsterProperties;
@@ -83,11 +86,11 @@ public class CacheConfiguration {
             createCache(cm, com.mycompany.myapp.domain.User.class.getName(), jcacheConfiguration);
             createCache(cm, com.mycompany.myapp.domain.Authority.class.getName(), jcacheConfiguration);
             createCache(cm, com.mycompany.myapp.domain.User.class.getName() + ".authorities", jcacheConfiguration);
-            createCache(cm, com.mycompany.myapp.domain.Evento.class.getName(), jcacheConfiguration);
-            createCache(cm, com.mycompany.myapp.domain.Evento.class.getName() + ".integrantes", jcacheConfiguration);
-            createCache(cm, com.mycompany.myapp.domain.Integrante.class.getName(), jcacheConfiguration);
-            createCache(cm, com.mycompany.myapp.domain.Venta.class.getName(), jcacheConfiguration);
-            createCache(cm, com.mycompany.myapp.domain.Venta.class.getName() + ".asientos", jcacheConfiguration);
+            createCache(cm, EventoEntity.class.getName(), jcacheConfiguration);
+            createCache(cm, EventoEntity.class.getName() + ".integrantes", jcacheConfiguration);
+            createCache(cm, IntegranteEntity.class.getName(), jcacheConfiguration);
+            createCache(cm, VentaEntity.class.getName(), jcacheConfiguration);
+            createCache(cm, VentaEntity.class.getName() + ".asientos", jcacheConfiguration);
             createCache(cm, com.mycompany.myapp.domain.AsientoVendido.class.getName(), jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };

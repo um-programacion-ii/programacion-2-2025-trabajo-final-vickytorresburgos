@@ -1,9 +1,9 @@
 package com.mycompany.myapp.service;
 
-import com.mycompany.myapp.domain.Evento;
-import com.mycompany.myapp.domain.Integrante;
-import com.mycompany.myapp.repository.EventoRepository;
-import com.mycompany.myapp.repository.IntegranteRepository;
+import com.mycompany.myapp.evento.infrastructure.persistence.entity.EventoEntity;
+import com.mycompany.myapp.evento.infrastructure.persistence.entity.IntegranteEntity;
+import com.mycompany.myapp.evento.infrastructure.persistence.repository.JpaEventoRepository;
+import com.mycompany.myapp.evento.infrastructure.persistence.repository.JpaIntegranteRepository;
 import com.mycompany.myapp.service.dto.catedra.EventoCatedraDTO;
 import com.mycompany.myapp.service.dto.catedra.IntegranteDTO;
 import java.util.HashSet;
@@ -12,7 +12,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,13 +29,19 @@ public class SincronizacionService {
     private final Logger log = LoggerFactory.getLogger(SincronizacionService.class);
 
     private final RestTemplate catedraRestTemplate;
-    private final EventoRepository eventoRepository;
-    private final IntegranteRepository integranteRepository;
+    private final JpaEventoRepository eventoRepository;
+    private final JpaIntegranteRepository integranteRepository;
+
+    @Value("${application.catedra.jwt-token}")
+    private String catedraToken;
+
+    @Value("${application.catedra.base-url}")
+    private String catedraUrl;
 
     public SincronizacionService(
         @Qualifier("catedraRestTemplate") RestTemplate catedraRestTemplate,
-        EventoRepository eventoRepository,
-        IntegranteRepository integranteRepository
+        JpaEventoRepository eventoRepository,
+        JpaIntegranteRepository integranteRepository
     ) {
         this.catedraRestTemplate = catedraRestTemplate;
         this.eventoRepository = eventoRepository;
@@ -45,20 +54,23 @@ public class SincronizacionService {
      */
     public void sincronizarEventos() {
         log.info("Iniciando sincronización de eventos desde Cátedra...");
-
-        String urlCatedra = "/api/endpoints/v1/eventos";
+        String endpoint = "/api/endpoints/v1/eventos";
+        String fullUrl = catedraUrl + endpoint;
 
         ResponseEntity<List<EventoCatedraDTO>> response;
         try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(catedraToken);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
             response =
                 catedraRestTemplate.exchange(
-                    urlCatedra,
+                    fullUrl,
                     HttpMethod.GET,
-                    null,
+                    entity,
                     new ParameterizedTypeReference<List<EventoCatedraDTO>>() {}
                 );
         } catch (Exception e) {
-            log.error("Error al llamar a /api/endpoints/v1/eventos: {}", e.getMessage());
+            log.error("Error al llamar a {}: {}", fullUrl, e.getMessage());
             return;
         }
 
@@ -71,9 +83,9 @@ public class SincronizacionService {
         log.debug("Se recibieron {} eventos de la Cátedra", eventosCatedra.size());
 
         for (EventoCatedraDTO dto : eventosCatedra) {
-            Evento evento = eventoRepository
+            EventoEntity evento = eventoRepository
                 .findByEventoCatedraId(dto.getEventoCatedraId())
-                .orElse(new Evento()); // Si no existe, crea uno nuevo
+                .orElse(new EventoEntity()); // Si no existe, crea uno nuevo
 
             evento.setEventoCatedraId(dto.getEventoCatedraId());
             evento.setTitulo(dto.getTitulo());
@@ -88,14 +100,15 @@ public class SincronizacionService {
                 evento.setEventoTipoDescripcion(dto.getEventoTipo().getDescripcion());
             }
 
-            Evento eventoGuardado = eventoRepository.save(evento);
+            EventoEntity eventoGuardado = eventoRepository.save(evento);
 
+            // Actualizar integrantes
             integranteRepository.deleteByEvento(eventoGuardado);
 
-            Set<Integrante> integrantesNuevos = new HashSet<>();
+            Set<IntegranteEntity> integrantesNuevos = new HashSet<>();
             if (dto.getIntegrantes() != null) {
                 for (IntegranteDTO integranteDTO : dto.getIntegrantes()) {
-                    Integrante integrante = new Integrante();
+                    IntegranteEntity integrante = new IntegranteEntity();
                     integrante.setNombre(integranteDTO.getNombre());
                     integrante.setApellido(integranteDTO.getApellido());
                     integrante.setIdentificacion(integranteDTO.getIdentificacion());

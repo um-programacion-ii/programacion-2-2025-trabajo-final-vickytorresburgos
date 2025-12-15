@@ -19,7 +19,9 @@ logging:
     tech.jhipster: DEBUG
     org.hibernate.SQL: DEBUG
     com.mycompany.myapp: DEBUG
-
+jpa:
+  properties:
+    hibernate.cache.use_second_level_cache: false
 spring:
   docker:
     compose:
@@ -123,3 +125,9 @@ application:
   catedra:
     base-url: http://192.168.194.250:8080
     jwt-token: ${TOKEN_JWT_CATEDRA}
+
+feign:
+  client:
+    config:
+      proxyService:
+        url: http://127.0.0.1:8081
