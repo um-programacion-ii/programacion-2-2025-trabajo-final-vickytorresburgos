@@ -48,19 +48,24 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/api/activate")).permitAll()
                     .requestMatchers(mvc.pattern("/api/account/reset-password/init")).permitAll()
                     .requestMatchers(mvc.pattern("/api/account/reset-password/finish")).permitAll()
+
+                    .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/notificaciones/**")).permitAll()
+
                     .requestMatchers(mvc.pattern("/api/test-catedra/**")).permitAll()
-                    .requestMatchers(mvc.pattern("/api/eventos/**")).authenticated()
-                    .requestMatchers(mvc.pattern("/api/sesion/**")).authenticated()
-                    .requestMatchers(mvc.pattern("/api/flujo/**")).authenticated()
-                    .requestMatchers(mvc.pattern("/api/**")).authenticated()
-                    .requestMatchers(mvc.pattern("/api/notificaciones/**")).permitAll()
-                    .requestMatchers(mvc.pattern("/api/admin/**")).hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(mvc.pattern("/v3/api-docs/**")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(mvc.pattern("/management/health")).permitAll()
                     .requestMatchers(mvc.pattern("/management/health/**")).permitAll()
                     .requestMatchers(mvc.pattern("/management/info")).permitAll()
                     .requestMatchers(mvc.pattern("/management/prometheus")).permitAll()
+
+                    .requestMatchers(mvc.pattern("/api/admin/**")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(mvc.pattern("/management/**")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(mvc.pattern("/v3/api-docs/**")).hasAuthority(AuthoritiesConstants.ADMIN)
+
+                    .requestMatchers(mvc.pattern("/api/eventos/**")).authenticated()
+                    .requestMatchers(mvc.pattern("/api/sesion/**")).authenticated()
+                    .requestMatchers(mvc.pattern("/api/flujo/**")).authenticated()
+
+                    .requestMatchers(mvc.pattern("/api/**")).authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(exceptions ->

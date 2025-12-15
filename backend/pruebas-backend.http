@@ -50,7 +50,7 @@ Authorization: Bearer {{jwt_token}}
 ### 6. VER DETALLE DE VENTA (CÁTEDRA)
 # (Requiere VPN y TOKEN_JWT_CATEDRA)
 # @name verDetalleVentaCatedra
-GET http://localhost:8080/api/admin/catedra-ventas
+GET http://localhost:8080/api/admin/catedra-ventas/2828
 Authorization: Bearer {{jwt_token}}
 
 ###
@@ -153,12 +153,12 @@ Authorization: Bearer {{jwt_token}}
 ### ==============================================
 # Este request llama al Backend, que a su vez llama al Proxy (localhost:8081).
 # @name obtenerMapaAsientos
-GET http://localhost:8080/api/eventos/2828/asientos
+GET http://localhost:8081/api/asientos/1
 Authorization: Bearer {{jwt_token}}
 
 ### HERRAMIENTA DE EMERGENCIA: FORZAR ACTUALIZACIÓN
 # Esto regenera los eventos en el servidor de la Cátedra.
 # @name forzarActualizacion
-GET http://192.168.194.250:8080/api/endpoints/v1/forzar-actualizacion
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2aWN0b3JpYXRvcnJlc2J1cmdvcyIsImV4cCI6MTc2Njc4Nzg3NiwiYXV0aCI6IlJPTEVfVVNFUiIsImlhdCI6MTc2NDE5NTg3Nn0.Y9VSeYT93ZJAqi-yvLKmTLsABOUyh3JRghZMyMuvziwc-c69SePrik67Ti9nbYqUTu9BADCXbWWPMBQYTtawcQ
+GET http://localhost:8080/api/endpoints/v1/forzar-actualizacion
+Authorization: Bearer {{jwt_token}}
 # (Nota: Si este token no funciona, usa el token manual de Cátedra que exportaste)

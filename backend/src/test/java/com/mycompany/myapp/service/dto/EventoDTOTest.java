@@ -2,6 +2,7 @@ package com.mycompany.myapp.service.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.mycompany.myapp.evento.infrastructure.web.dto.EventoDTO;
 import com.mycompany.myapp.web.rest.TestUtil;
 import org.junit.jupiter.api.Test;
 

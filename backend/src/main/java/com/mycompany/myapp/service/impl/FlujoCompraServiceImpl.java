@@ -1,11 +1,11 @@
 package com.mycompany.myapp.service.impl;
 
 import com.mycompany.myapp.domain.AsientoVendido;
-import com.mycompany.myapp.domain.Evento;
-import com.mycompany.myapp.domain.Venta;
+import com.mycompany.myapp.evento.infrastructure.persistence.entity.EventoEntity;
+import com.mycompany.myapp.venta.infrastructure.persistence.entity.VentaEntity;
 import com.mycompany.myapp.repository.AsientoVendidoRepository;
-import com.mycompany.myapp.repository.EventoRepository;
-import com.mycompany.myapp.repository.VentaRepository;
+import com.mycompany.myapp.evento.infrastructure.persistence.repository.JpaEventoRepository;
+import com.mycompany.myapp.venta.infrastructure.persistence.repository.JpaVentaRepository;
 import com.mycompany.myapp.service.FlujoCompraService;
 import com.mycompany.myapp.service.UserService;
 import com.mycompany.myapp.service.dto.catedra.*;
@@ -13,6 +13,7 @@ import com.mycompany.myapp.service.session.AsientoSeleccionado;
 import com.mycompany.myapp.service.session.EstadoSesionService;
 import com.mycompany.myapp.service.session.EstadoSesionUsuario;
 import com.mycompany.myapp.service.session.PasosCompra;
+import com.mycompany.myapp.web.rest.errors.CatedraException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,16 +37,16 @@ public class FlujoCompraServiceImpl implements FlujoCompraService {
 
     private final EstadoSesionService estadoSesionService;
     private final RestTemplate catedraRestTemplate;
-    private final EventoRepository eventoRepository;
-    private final VentaRepository ventaRepository;
+    private final JpaEventoRepository eventoRepository;
+    private final JpaVentaRepository ventaRepository;
     private final AsientoVendidoRepository asientoVendidoRepository;
     private final UserService userService;
 
     public FlujoCompraServiceImpl(
         EstadoSesionService estadoSesionService,
         @Qualifier("catedraRestTemplate") RestTemplate catedraRestTemplate,
-        EventoRepository eventoRepository,
-        VentaRepository ventaRepository,
+        JpaEventoRepository eventoRepository,
+        JpaVentaRepository ventaRepository,
         AsientoVendidoRepository asientoVendidoRepository,
         UserService userService
     ) {
@@ -58,7 +59,7 @@ public class FlujoCompraServiceImpl implements FlujoCompraService {
     }
 
     @Override
-    public EstadoSesionUsuario bloquearAsientos() {
+    public BloquearAsientosResponse bloquearAsientos() {
         log.debug("Service request para bloquear asientos en Cátedra");
 
         EstadoSesionUsuario sesion = estadoSesionService.cargarEstado();
@@ -96,40 +97,38 @@ public class FlujoCompraServiceImpl implements FlujoCompraService {
 
         sesion.setPasoActual(PasosCompra.VENTA);
         estadoSesionService.guardarEstado(sesion);
-        return sesion;
+        return respuestaCatedra;
     }
 
     @Override
     public RealizarVentaDTO realizarVenta() {
-        log.info("Service request para realizar venta (Flujo Robusto).");
+        log.info("Service request para realizar venta.");
 
         EstadoSesionUsuario sesion = estadoSesionService.cargarEstado();
 
         // 1. Validaciones
-        if (sesion.getPasoActual() != PasosCompra.CARGANDO_NOMBRES && sesion.getPasoActual() != PasosCompra.VENTA) {
-        }
         if (sesion.getAsientosSeleccionados().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No hay asientos.");
         }
 
         // 2. Datos Locales
-        Evento eventoLocal = eventoRepository
+        EventoEntity eventoLocal = eventoRepository
             .findByEventoCatedraId(sesion.getEventoIdActual())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no encontrado localmente."));
 
         BigDecimal precioTotal = eventoLocal.getPrecioEntrada().multiply(BigDecimal.valueOf(sesion.getAsientosSeleccionados().size()));
 
         // 3. Guardar Pendiente
-        Venta ventaLocal = new Venta();
+        VentaEntity ventaLocal = new VentaEntity();
         ventaLocal.setEvento(eventoLocal);
         ventaLocal.setUser(userService.getUserWithAuthorities().orElse(null));
         ventaLocal.setFechaVenta(Instant.now());
         ventaLocal.setPrecioVenta(precioTotal);
         ventaLocal.setCantidadAsientos(sesion.getAsientosSeleccionados().size());
-        ventaLocal.setResultado(null); // PENDIENTE
+        ventaLocal.setResultado(false);
         ventaLocal.setDescripcion("Iniciando transacción con Cátedra...");
 
-        Venta ventaGuardada = ventaRepository.save(ventaLocal);
+        VentaEntity ventaGuardada = ventaRepository.save(ventaLocal);
 
         // 4. Request Cátedra
         RealizarVentaRequest requestDTO = new RealizarVentaRequest();
@@ -144,15 +143,17 @@ public class FlujoCompraServiceImpl implements FlujoCompraService {
             String urlCatedra = "/api/endpoints/v1/realizar-venta";
             respuestaCatedra = catedraRestTemplate.postForObject(urlCatedra, requestDTO, RealizarVentaDTO.class);
         } catch (Exception e) {
-            log.error("❌ Error crítico al llamar a Cátedra: {}", e.getMessage());
+            log.error("Error crítico al llamar a Cátedra: {}", e.getMessage());
             ventaGuardada.setResultado(false);
-            ventaGuardada.setDescripcion("Error de comunicación: " + e.getMessage());
+            ventaGuardada.setDescripcion("Fallo técnico " + e.getMessage());
             ventaRepository.save(ventaGuardada);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de comunicación con Cátedra. Venta cancelada.");
+            throw e;
+        }
+        if (respuestaCatedra == null) {
+            throw new CatedraException("La catedra no responde", HttpStatus.BAD_GATEWAY);
         }
 
         // 6. Actualizar Venta
-        assert respuestaCatedra != null;
         ventaGuardada.setVentaCatedraId(respuestaCatedra.getVentaId());
         ventaGuardada.setResultado(respuestaCatedra.isResultado());
         ventaGuardada.setDescripcion(respuestaCatedra.getDescripcion());

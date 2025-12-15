@@ -1,10 +1,11 @@
 package com.mycompany.myapp.service.scheduler;
 
-import com.mycompany.myapp.domain.Venta;
-import com.mycompany.myapp.repository.VentaRepository;
+import com.mycompany.myapp.venta.infrastructure.persistence.entity.VentaEntity;
+import com.mycompany.myapp.venta.infrastructure.persistence.repository.JpaVentaRepository;
 import com.mycompany.myapp.service.CatedraVentaService;
 import com.mycompany.myapp.service.dto.catedra.CatedraVentaResumidaDTO;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class ReintentoScheduler {
     private final Logger log = LoggerFactory.getLogger(ReintentoScheduler.class);
-    private final VentaRepository ventaRepository;
+    private final JpaVentaRepository ventaRepository;
     private final CatedraVentaService catedraVentaService;
 
-    public ReintentoScheduler(VentaRepository ventaRepository, CatedraVentaService catedraVentaService) {
+    public ReintentoScheduler(JpaVentaRepository ventaRepository, CatedraVentaService catedraVentaService) {
         this.ventaRepository = ventaRepository;
         this.catedraVentaService = catedraVentaService;
     }
@@ -32,8 +33,8 @@ public class ReintentoScheduler {
     public void reconciliarVentasPendientes() {
         log.info("Iniciando reintento de ventas pendientes...");
 
-        // 1. Buscar ventas locales donde 'resultado' es NULL
-        List<Venta> ventasPendientes = ventaRepository.findAll().stream()
+        // Busca ventas locales donde 'resultado' es NULL
+        List<VentaEntity> ventasPendientes = ventaRepository.findAll().stream()
             .filter(v -> v.getResultado() == null)
             .toList();
 
@@ -47,7 +48,7 @@ public class ReintentoScheduler {
         try {
             List<CatedraVentaResumidaDTO> historialCatedra = catedraVentaService.getHistorialVentasCatedra();
 
-            for (Venta ventaLocal : ventasPendientes) {
+            for (VentaEntity ventaLocal : ventasPendientes) {
 
                 boolean encontrada = historialCatedra.stream().anyMatch(vCatedra ->
                     vCatedra.getEventoId().equals(ventaLocal.getEvento().getEventoCatedraId()) &&

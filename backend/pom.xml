@@ -77,6 +77,12 @@
     <dependencyManagement>
       <dependencies>
         <dependency>
+          <groupId>com.google.code.findbugs</groupId>
+          <artifactId>jsr305</artifactId>
+          <version>3.0.2</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
           <groupId>org.springframework.cloud</groupId>
           <artifactId>spring-cloud-dependencies</artifactId>
           <version>${spring-cloud-dependencies.version}</version>
@@ -443,6 +449,11 @@
                             <path>
                                 <groupId>org.glassfish.jaxb</groupId>
                                 <artifactId>jaxb-runtime</artifactId>
+                            </path>
+                            <path>
+                              <groupId>com.google.code.findbugs</groupId>
+                              <artifactId>jsr305</artifactId>
+                              <version>3.0.2</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>

@@ -2,8 +2,8 @@ package com.mycompany.myapp.web.rest.flujo;
 
 import com.mycompany.myapp.service.FlujoCompraService;
 import com.mycompany.myapp.service.SincronizacionService;
+import com.mycompany.myapp.service.dto.catedra.BloquearAsientosResponse;
 import com.mycompany.myapp.service.dto.catedra.RealizarVentaDTO;
-import com.mycompany.myapp.service.session.EstadoSesionUsuario;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ public class FlujoCompraResource {
     private final Logger log = LoggerFactory.getLogger(FlujoCompraResource.class);
 
     private final SincronizacionService sincronizacionService;
-    private final FlujoCompraService flujoCompraService; // <-- NUEVO SERVICIO
+    private final FlujoCompraService flujoCompraService;
 
     public FlujoCompraResource(
         SincronizacionService sincronizacionService,
@@ -42,17 +42,15 @@ public class FlujoCompraResource {
     }
 
     @PostMapping("/bloquear-asientos")
-    public ResponseEntity<EstadoSesionUsuario> bloquearAsientos() {
+    public ResponseEntity<BloquearAsientosResponse> bloquearAsientos() {
         log.debug("REST request para bloquear asientos (Delegando a Service)");
-        // Toda la lógica está ahora en el servicio
-        EstadoSesionUsuario sesion = flujoCompraService.bloquearAsientos();
-        return ResponseEntity.ok(sesion);
+        BloquearAsientosResponse response = flujoCompraService.bloquearAsientos();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/realizar-venta")
     public ResponseEntity<RealizarVentaDTO> realizarVenta() {
         log.debug("REST request para realizar venta (Delegando a Service)");
-        // Toda la lógica está ahora en el servicio
         RealizarVentaDTO respuesta = flujoCompraService.realizarVenta();
         return ResponseEntity.ok(respuesta);
     }

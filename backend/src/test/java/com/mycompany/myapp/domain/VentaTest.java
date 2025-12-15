@@ -5,6 +5,8 @@ import static com.mycompany.myapp.domain.EventoTestSamples.*;
 import static com.mycompany.myapp.domain.VentaTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.mycompany.myapp.evento.infrastructure.persistence.entity.EventoEntity;
+import com.mycompany.myapp.venta.infrastructure.persistence.entity.VentaEntity;
 import com.mycompany.myapp.web.rest.TestUtil;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,9 +16,9 @@ class VentaTest {
 
     @Test
     void equalsVerifier() throws Exception {
-        TestUtil.equalsVerifier(Venta.class);
-        Venta venta1 = getVentaSample1();
-        Venta venta2 = new Venta();
+        TestUtil.equalsVerifier(VentaEntity.class);
+        VentaEntity venta1 = getVentaSample1();
+        VentaEntity venta2 = new VentaEntity();
         assertThat(venta1).isNotEqualTo(venta2);
 
         venta2.setId(venta1.getId());
@@ -28,7 +30,7 @@ class VentaTest {
 
     @Test
     void asientosTest() {
-        Venta venta = getVentaRandomSampleGenerator();
+        VentaEntity venta = getVentaRandomSampleGenerator();
         AsientoVendido asientoVendidoBack = getAsientoVendidoRandomSampleGenerator();
 
         venta.addAsientos(asientoVendidoBack);
@@ -50,8 +52,8 @@ class VentaTest {
 
     @Test
     void eventoTest() {
-        Venta venta = getVentaRandomSampleGenerator();
-        Evento eventoBack = getEventoRandomSampleGenerator();
+        VentaEntity venta = getVentaRandomSampleGenerator();
+        EventoEntity eventoBack = getEventoRandomSampleGenerator();
 
         venta.setEvento(eventoBack);
         assertThat(venta.getEvento()).isEqualTo(eventoBack);

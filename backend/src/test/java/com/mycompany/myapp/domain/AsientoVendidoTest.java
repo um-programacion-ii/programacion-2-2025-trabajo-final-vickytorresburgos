@@ -4,6 +4,7 @@ import static com.mycompany.myapp.domain.AsientoVendidoTestSamples.*;
 import static com.mycompany.myapp.domain.VentaTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.mycompany.myapp.venta.infrastructure.persistence.entity.VentaEntity;
 import com.mycompany.myapp.web.rest.TestUtil;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,7 @@ class AsientoVendidoTest {
     @Test
     void ventaTest() {
         AsientoVendido asientoVendido = getAsientoVendidoRandomSampleGenerator();
-        Venta ventaBack = getVentaRandomSampleGenerator();
+        VentaEntity ventaBack = getVentaRandomSampleGenerator();
 
         asientoVendido.setVenta(ventaBack);
         assertThat(asientoVendido.getVenta()).isEqualTo(ventaBack);
