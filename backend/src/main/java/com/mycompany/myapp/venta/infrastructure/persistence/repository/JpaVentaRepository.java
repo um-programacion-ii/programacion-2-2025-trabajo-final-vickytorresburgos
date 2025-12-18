@@ -19,6 +19,7 @@ public interface JpaVentaRepository extends JpaRepository<VentaEntity, Long> {
      * @param pageable la información de paginación.
      * @return una página de Ventas.
      */
+    @EntityGraph(attributePaths = {"evento", "evento.imagen"})
     @Query("select venta from VentaEntity venta where venta.user.login = ?#{authentication.name}")
     Page<VentaEntity> findByUserIsCurrentUser(Pageable pageable);
 }

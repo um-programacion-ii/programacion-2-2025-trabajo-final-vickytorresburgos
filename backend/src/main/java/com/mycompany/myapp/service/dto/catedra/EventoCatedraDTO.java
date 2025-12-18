@@ -36,6 +36,15 @@ public class EventoCatedraDTO {
     @JsonProperty("integrantes")
     private List<IntegranteDTO> integrantes;
 
+    @JsonProperty("resumen")
+    private String resumen;
+
+    @JsonProperty("direccion")
+    private String direccion;
+
+    @JsonProperty("imagen")
+    private String imagen;
+
 
     public Long getEventoCatedraId() { return eventoCatedraId; }
     public void setEventoCatedraId(Long eventoCatedraId) { this.eventoCatedraId = eventoCatedraId; }
@@ -55,4 +64,28 @@ public class EventoCatedraDTO {
     public void setEventoTipo(EventoTipoDTO eventoTipo) { this.eventoTipo = eventoTipo; }
     public List<IntegranteDTO> getIntegrantes() { return integrantes; }
     public void setIntegrantes(List<IntegranteDTO> integrantes) { this.integrantes = integrantes; }
+
+    public String getResumen() {
+        return resumen;
+    }
+
+    public void setResumen(String resumen) {
+        this.resumen = resumen;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
 }

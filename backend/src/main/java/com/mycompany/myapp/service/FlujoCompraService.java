@@ -1,5 +1,6 @@
 package com.mycompany.myapp.service;
 
+import com.mycompany.myapp.service.dto.catedra.CatedraBloqueoRequest;
 import com.mycompany.myapp.service.dto.catedra.BloquearAsientosResponse;
 import com.mycompany.myapp.service.dto.catedra.RealizarVentaDTO;
 
@@ -12,9 +13,10 @@ public interface FlujoCompraService {
      * Ejecuta la lógica de bloqueo de asientos contra la Cátedra.
      * Valida el estado de la sesión y actualiza el paso.
      *
+     * @param request Datos de los asientos a bloquear.
      * @return El estado de sesión actualizado.
      */
-    BloquearAsientosResponse bloquearAsientos();
+    BloquearAsientosResponse bloquearAsientos(CatedraBloqueoRequest request);
 
     /**
      * Ejecuta la lógica de venta final.

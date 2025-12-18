@@ -1,5 +1,7 @@
 package com.mycompany.myapp.venta.domain.model;
 
+import com.mycompany.myapp.evento.domain.model.Evento;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -17,6 +19,7 @@ public class Venta {
     private Integer cantidadAsientos;
     private String userLogin;
     private String eventoTitulo;
+    private Evento evento;
 
     public Venta() {
     }
@@ -126,5 +129,13 @@ public class Venta {
     public void confirmar() {
         this.resultado = true;
         this.fechaVenta = Instant.now();
+    }
+
+    public Evento getEvento() {
+        return evento;
+    }
+
+    public void setEvento(Evento evento) {
+        this.evento = evento;
     }
 }

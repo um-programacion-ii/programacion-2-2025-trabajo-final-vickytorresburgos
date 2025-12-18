@@ -3,6 +3,7 @@ package com.mycompany.myapp.evento.domain.model;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Evento {
@@ -19,7 +20,7 @@ public class Evento {
     private BigDecimal precioEntrada;
     private String eventoTipoNombre;
     private String eventoTipoDescripcion;
-    private Set<Integrante> integrantes = new HashSet<>();
+    private List<Integrante> integrantes;
 
     public Evento() {
     }
@@ -37,7 +38,7 @@ public class Evento {
                   BigDecimal precioEntrada,
                   String eventoTipoNombre,
                   String eventoTipoDescripcion,
-                  Set<Integrante> integrantes) {
+                  List<Integrante> integrantes) {
         this.id = id;
         this.eventoCatedraId = eventoCatedraId;
         this.titulo = titulo;
@@ -158,11 +159,11 @@ public class Evento {
         this.eventoTipoDescripcion = eventoTipoDescripcion;
     }
 
-    public Set<Integrante> getIntegrantes() {
+    public List<Integrante> getIntegrantes() {
         return integrantes;
     }
 
-    public void setIntegrantes(Set<Integrante> integrantes) {
+    public void setIntegrantes(List<Integrante> integrantes) {
         this.integrantes = integrantes;
     }
 }

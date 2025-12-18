@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -42,6 +43,13 @@ public class EventoDTO implements Serializable {
     private String eventoTipoNombre;
 
     private String eventoTipoDescripcion;
+
+    private Integer asientosDisponibles;
+    private Integer capacidadTotal;
+
+    private Integer asientosOcupados;
+
+    private List<IntegranteDTO> integrantes;
 
     public Long getId() {
         return id;
@@ -146,6 +154,23 @@ public class EventoDTO implements Serializable {
     public void setEventoTipoDescripcion(String eventoTipoDescripcion) {
         this.eventoTipoDescripcion = eventoTipoDescripcion;
     }
+
+    public Integer getAsientosDisponibles() { return asientosDisponibles; }
+    public void setAsientosDisponibles(Integer asientosDisponibles) { this.asientosDisponibles = asientosDisponibles; }
+
+    public Integer getCapacidadTotal() { return capacidadTotal; }
+    public void setCapacidadTotal(Integer capacidadTotal) { this.capacidadTotal = capacidadTotal; }
+
+    public Integer getAsientosOcupados() {
+        return asientosOcupados;
+    }
+
+    public void setAsientosOcupados(Integer asientosOcupados) {
+        this.asientosOcupados = asientosOcupados;
+    }
+
+    public List<IntegranteDTO> getIntegrantes() { return integrantes; }
+    public void setIntegrantes(List<IntegranteDTO> integrantes) { this.integrantes = integrantes; }
 
     @Override
     public boolean equals(Object o) {

@@ -2,6 +2,7 @@ package com.mycompany.myapp.web.rest.flujo;
 
 import com.mycompany.myapp.service.FlujoCompraService;
 import com.mycompany.myapp.service.SincronizacionService;
+import com.mycompany.myapp.service.dto.catedra.CatedraBloqueoRequest;
 import com.mycompany.myapp.service.dto.catedra.BloquearAsientosResponse;
 import com.mycompany.myapp.service.dto.catedra.RealizarVentaDTO;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,9 +44,9 @@ public class FlujoCompraResource {
     }
 
     @PostMapping("/bloquear-asientos")
-    public ResponseEntity<BloquearAsientosResponse> bloquearAsientos() {
-        log.debug("REST request para bloquear asientos (Delegando a Service)");
-        BloquearAsientosResponse response = flujoCompraService.bloquearAsientos();
+    public ResponseEntity<BloquearAsientosResponse> bloquearAsientos(@RequestBody CatedraBloqueoRequest request) {
+        log.debug("REST request para bloquear asientos: {}", request);
+        BloquearAsientosResponse response = flujoCompraService.bloquearAsientos(request);
         return ResponseEntity.ok(response);
     }
 

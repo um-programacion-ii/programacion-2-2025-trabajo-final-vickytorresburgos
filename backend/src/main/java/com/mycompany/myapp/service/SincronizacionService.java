@@ -94,6 +94,9 @@ public class SincronizacionService {
             evento.setFilaAsientos(dto.getFilaAsientos());
             evento.setColumnAsientos(dto.getColumnAsientos());
             evento.setPrecioEntrada(dto.getPrecioEntrada());
+            evento.setResumen(dto.getResumen());
+            evento.setDireccion(dto.getDireccion());
+            evento.setImagen(dto.getImagen());
 
             if (dto.getEventoTipo() != null) {
                 evento.setEventoTipoNombre(dto.getEventoTipo().getNombre());

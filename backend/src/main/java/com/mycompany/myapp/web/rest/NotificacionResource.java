@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * REST controller para recibir notificaciones (ej. desde el Proxy).
+ * REST controller para recibir notificaciones.
  */
 @RestController
 @RequestMapping("/api/notificaciones")
