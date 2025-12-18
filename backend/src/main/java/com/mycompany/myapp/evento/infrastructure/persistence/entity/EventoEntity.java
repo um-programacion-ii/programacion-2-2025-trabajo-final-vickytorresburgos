@@ -48,7 +48,7 @@ public class EventoEntity implements Serializable {
     @Column(name = "direccion")
     private String direccion;
 
-    @Column(name = "imagen")
+    @Column(name = "imagen", length = 2048)
     private String imagen;
 
     @Column(name = "fila_asientos")

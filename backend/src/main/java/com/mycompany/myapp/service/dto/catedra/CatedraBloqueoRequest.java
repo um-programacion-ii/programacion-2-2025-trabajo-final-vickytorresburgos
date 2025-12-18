@@ -3,7 +3,7 @@ package com.mycompany.myapp.service.dto.catedra;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public class BloquearAsientosRequest {
+public class CatedraBloqueoRequest {
 
     @JsonProperty("eventoId")
     private Long eventoId;

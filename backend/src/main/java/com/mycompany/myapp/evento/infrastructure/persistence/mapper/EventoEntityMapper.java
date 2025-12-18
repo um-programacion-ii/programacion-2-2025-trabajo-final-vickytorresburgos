@@ -9,6 +9,7 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface EventoEntityMapper {
+
     Evento toDomain(EventoEntity entity);
     EventoEntity toEntity(Evento domain);
 

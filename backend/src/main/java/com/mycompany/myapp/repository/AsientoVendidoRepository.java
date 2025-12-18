@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface AsientoVendidoRepository extends JpaRepository<AsientoVendido, Long> {}
+public interface AsientoVendidoRepository extends JpaRepository<AsientoVendido, Long> {
+    long countByVenta_Evento_Id(Long eventoId);
+}

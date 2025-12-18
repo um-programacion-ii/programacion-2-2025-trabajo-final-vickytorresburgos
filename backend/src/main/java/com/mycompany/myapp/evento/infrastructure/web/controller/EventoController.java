@@ -1,8 +1,11 @@
 package com.mycompany.myapp.evento.infrastructure.web.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.evento.application.service.EventoService;
 import com.mycompany.myapp.evento.infrastructure.persistence.entity.EventoEntity;
 import com.mycompany.myapp.evento.infrastructure.persistence.repository.JpaEventoRepository;
+import com.mycompany.myapp.repository.AsientoVendidoRepository;
 import com.mycompany.myapp.service.AsientoMapaService;
 import com.mycompany.myapp.evento.infrastructure.web.dto.EventoDTO;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
@@ -10,6 +13,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -43,11 +47,16 @@ public class EventoController {
     private final EventoService eventoService;
     private final JpaEventoRepository eventoRepository;
     private final AsientoMapaService asientoMapaService;
+    private final ObjectMapper objectMapper;
 
-    public EventoController(EventoService eventoService, JpaEventoRepository eventoRepository, AsientoMapaService asientoMapaService) {
+    private final AsientoVendidoRepository asientoVendidoRepository;
+
+    public EventoController(EventoService eventoService, JpaEventoRepository eventoRepository, AsientoMapaService asientoMapaService, ObjectMapper objectMapper, AsientoVendidoRepository asientoVendidoRepository) {
         this.eventoService = eventoService;
         this.eventoRepository = eventoRepository;
         this.asientoMapaService = asientoMapaService;
+        this.objectMapper = objectMapper;
+        this.asientoVendidoRepository = asientoVendidoRepository;
     }
 
     /**
@@ -162,6 +171,67 @@ public class EventoController {
     public ResponseEntity<EventoDTO> getEvento(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Evento : {}", id);
         Optional<EventoDTO> eventoDTO = eventoService.findOne(id);
+
+        if (eventoDTO.isPresent()) {
+            EventoDTO dto = eventoDTO.get();
+
+            int filas = dto.getFilaAsientos() != null ? dto.getFilaAsientos() : 0;
+            int columnas = dto.getColumnAsientos() != null ? dto.getColumnAsientos() : 0;
+            int capacidad = filas * columnas;
+
+            int cantVendidos = 0;
+            int cantBloqueadosVigentes = 0;
+
+            try {
+                String jsonMapa = asientoMapaService.obtenerMapaAsientosDeCatedra(id);
+                JsonNode rootNode = objectMapper.readTree(jsonMapa);
+                JsonNode asientosNode = rootNode.path("asientos");
+
+                if (asientosNode.isArray()) {
+                    Instant ahora = Instant.now();
+
+                    for (JsonNode asiento : asientosNode) {
+                        String estado = asiento.path("estado").asText();
+
+                        if ("Vendido".equalsIgnoreCase(estado)) {
+                            cantVendidos++;
+                        }
+                        else if ("Bloqueado".equalsIgnoreCase(estado)) {
+                            String expiraStr = asiento.path("expira").asText();
+                            boolean vigente = true;
+
+                            if (expiraStr != null && !expiraStr.isEmpty()) {
+                                try {
+                                    Instant expira = Instant.parse(expiraStr);
+                                    if (expira.isBefore(ahora)) {
+                                        vigente = false;
+                                    }
+                                } catch (Exception e) {
+                                    LOG.warn("No se pudo parsear fecha expira: {}", expiraStr);
+                                }
+                            }
+
+                            if (vigente) {
+                                cantBloqueadosVigentes++;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LOG.error("Error calculando disponibilidad con Cátedra: {}", e.getMessage());
+            }
+
+            dto.setCapacidadTotal(capacidad);
+
+            dto.setAsientosOcupados(cantVendidos);
+
+
+            int totalNoDisponibles = cantVendidos + cantBloqueadosVigentes;
+            dto.setAsientosDisponibles(Math.max(0, capacidad - totalNoDisponibles));
+
+            return ResponseEntity.ok(dto);
+        }
+
         return ResponseUtil.wrapOrNotFound(eventoDTO);
     }
 
