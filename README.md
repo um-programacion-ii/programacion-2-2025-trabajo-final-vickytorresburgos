@@ -1,9 +1,9 @@
 
-# Trabajo Final Programacion II - 2025
+# Trabajo Final Programación II - 2025
 
-**Alumno**: Torres Burgos Maria Victoria \
-**Legajo**: 62092 \
-**Año**: 4to
+Alumno: Torres Burgos Maria Victoria \
+Legajo: 62092 \
+Año: 4to
 --- 
 ## Sistema Integral de Venta de Entradas
 
@@ -35,29 +35,27 @@ Desarrollado en Java utilizando Spring Boot, es el núcleo de la aplicación. Su
 
 ### Proxy
 
-**Acceso exclusivo:** Es el único componente del sistema con autorización y acceso técnico para conectarse a los servicios adicionales de la cátedra: **Kafka** y **Redis**.
+* **Acceso exclusivo:** Es el único componente del sistema con autorización y acceso técnico para conectarse a los servicios adicionales de la cátedra: **Kafka** y **Redis**.
 
-**Intermediario:** Actúa como puente o intermediario exclusivo entre el Backend del alumno y los servicios externos de la cátedra.
+* **Intermediario:** Actúa como puente o intermediario exclusivo entre el Backend del alumno y los servicios externos de la cátedra.
 
 ### Interacción con Redis (Gestión de Asientos)
 
-**Consulta de ubicaciones:** El proxy accede al servicio Redis de la cátedra para obtener y mantener actualizada la información sobre la ubicación de los asientos de cada evento.
+* **Consulta de ubicaciones:** El proxy accede al servicio Redis de la cátedra para obtener y mantener actualizada la información sobre la ubicación de los asientos de cada evento.
 
-**Estado de asientos:** Consulta y reporta el estado de los asientos (libres, vendidos, seleccionados o bloqueados) cada vez que el Backend lo solicite.
+* **Estado de asientos:** Consulta y reporta el estado de los asientos (libres, vendidos, seleccionados o bloqueados) cada vez que el Backend lo solicite.
 
 ### Interacción con Kafka (Sincronización de Eventos)
 
-**Suscripción a tópicos:** El proxy debe estar suscrito al tópico de Kafka de la cátedra para recibir notificaciones automáticas sobre cambios en los eventos.
+* **Suscripción a tópicos:** El proxy debe estar suscrito al tópico de Kafka de la cátedra para recibir notificaciones automáticas sobre cambios en los eventos.
 
-**Lectura de cambios:** Debe procesar la información de Kafka cuando se agreguen nuevos eventos, expiren por tiempo, se cancelen o se modifiquen sus datos.
+* **Lectura de cambios:** Debe procesar la información de Kafka cuando se agreguen nuevos eventos, expiren por tiempo, se cancelen o se modifiquen sus datos.
 
-**Notificación al Backend:** Una vez que recibe una actualización desde Kafka, el proxy informa estos cambios al Backend.
+* **Notificación al Backend:** Una vez que recibe una actualización desde Kafka, el proxy informa estos cambios al Backend.
 
+* **Comunicación:** Toda la comunicación entre el proxy y el backend esta hecha mediante **JSON**.
 
-**Comunicación:** Toda la comunicación entre el proxy y el backend esta hecha mediante **JSON**.
-
-
-**Autenticación:** El proxy esta configurado con sus credenciales y el acceso esta autenticado mediante **tokens JWT**.
+* **Autenticación:** El proxy esta configurado con sus credenciales y el acceso esta autenticado mediante **tokens JWT**.
 
 
 ### Cliente Móvil 
