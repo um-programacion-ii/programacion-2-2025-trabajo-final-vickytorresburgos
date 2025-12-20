@@ -1,6 +1,7 @@
 package com.mycompany.myapp.service.impl;
 
 import com.mycompany.myapp.domain.AsientoVendido;
+import com.mycompany.myapp.evento.domain.model.Evento;
 import com.mycompany.myapp.evento.infrastructure.persistence.entity.EventoEntity;
 import com.mycompany.myapp.venta.infrastructure.persistence.entity.VentaEntity;
 import com.mycompany.myapp.repository.AsientoVendidoRepository;
@@ -62,10 +63,14 @@ public class FlujoCompraServiceImpl implements FlujoCompraService {
     public BloquearAsientosResponse bloquearAsientos(CatedraBloqueoRequest request) {
         log.debug("Service request para bloquear asientos en Cátedra: {}", request);
 
-        // Cargar la sesión actual
+        EventoEntity eventoLocal = eventoRepository.findById(request.getEventoId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Evento no encontrado en el sistema local"));
+
+        Long idRealCatedra = eventoLocal.getEventoCatedraId();
+        log.debug("Traduciendo ID para bloqueo: Interno {} -> Cátedra {}", request.getEventoId(), idRealCatedra);
+
         EstadoSesionUsuario sesion = estadoSesionService.cargarEstado();
 
-        // actualizar le sesion con los asientos seleccionados
         sesion.setEventoIdActual(request.getEventoId());
 
         Set<AsientoSeleccionado> nuevosAsientos = request.getAsientos().stream()
@@ -81,7 +86,8 @@ public class FlujoCompraServiceImpl implements FlujoCompraService {
 
         CatedraBloqueoRequest requestCatedra = new CatedraBloqueoRequest();
 
-        requestCatedra.setEventoId(sesion.getEventoIdActual());
+        requestCatedra.setEventoId(idRealCatedra);
+
         requestCatedra.setAsientos(
             sesion.getAsientosSeleccionados().stream()
                 .map(asiento -> new AsientoBloqueoDTO(asiento.getFila(), asiento.getColumna()))
@@ -98,18 +104,17 @@ public class FlujoCompraServiceImpl implements FlujoCompraService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error de comunicación con Cátedra");
         }
 
-
         if (respuestaCatedra == null || !respuestaCatedra.isResultado()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 respuestaCatedra != null ? respuestaCatedra.getDescripcion() : "Asientos ocupados");
         }
 
-        // cambiar paso del flujo
         sesion.setPasoActual(PasosCompra.CARGANDO_NOMBRES);
         estadoSesionService.guardarEstado(sesion);
 
         return respuestaCatedra;
     }
+
     @Override
     public RealizarVentaDTO realizarVenta() {
         log.info("Service request para realizar venta.");
@@ -121,7 +126,7 @@ public class FlujoCompraServiceImpl implements FlujoCompraService {
         }
 
         EventoEntity eventoLocal = eventoRepository
-            .findByEventoCatedraId(sesion.getEventoIdActual())
+            .findById(sesion.getEventoIdActual())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento no encontrado localmente."));
 
         BigDecimal precioTotal = eventoLocal.getPrecioEntrada().multiply(BigDecimal.valueOf(sesion.getAsientosSeleccionados().size()));
@@ -138,7 +143,7 @@ public class FlujoCompraServiceImpl implements FlujoCompraService {
         VentaEntity ventaGuardada = ventaRepository.save(ventaLocal);
 
         RealizarVentaRequest requestDTO = new RealizarVentaRequest();
-        requestDTO.setEventoId(sesion.getEventoIdActual());
+        requestDTO.setEventoId(eventoLocal.getEventoCatedraId());
         requestDTO.setFecha(Instant.now());
         requestDTO.setPrecioVenta(precioTotal);
         requestDTO.setAsientos(sesion.getAsientosSeleccionados());

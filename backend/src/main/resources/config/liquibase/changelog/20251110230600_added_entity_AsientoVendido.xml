@@ -44,17 +44,17 @@
           Spring Boot configuration key.
     -->
     <changeSet id="20251110230600-1-data" author="jhipster" context="faker">
-        <loadData
-                  file="config/liquibase/fake-data/asiento_vendido.csv"
-                  separator=";"
-                  tableName="asiento_vendido"
-                  usePreparedStatements="true">
-            <column name="id" type="numeric"/>
-            <column name="fila" type="numeric"/>
-            <column name="columna" type="numeric"/>
-            <column name="persona" type="string"/>
-            <column name="estado" type="string"/>
-            <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
-        </loadData>
+<!--        <loadData-->
+<!--                  file="config/liquibase/fake-data/asiento_vendido.csv"-->
+<!--                  separator=";"-->
+<!--                  tableName="asiento_vendido"-->
+<!--                  usePreparedStatements="true">-->
+<!--            <column name="id" type="numeric"/>-->
+<!--            <column name="fila" type="numeric"/>-->
+<!--            <column name="columna" type="numeric"/>-->
+<!--            <column name="persona" type="string"/>-->
+<!--            <column name="estado" type="string"/>-->
+<!--            &lt;!&ndash; jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here &ndash;&gt;-->
+<!--        </loadData>-->
     </changeSet>
 </databaseChangeLog>

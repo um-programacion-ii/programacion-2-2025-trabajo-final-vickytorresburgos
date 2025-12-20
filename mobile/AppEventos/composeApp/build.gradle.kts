@@ -90,7 +90,7 @@ android {
 
     buildTypes {
         getByName("debug") {
-            buildConfigField("String", "BACKEND_URL", "\"http://192.168.100.10:8080\"")
+            buildConfigField("String", "BACKEND_URL", "\"http://192.168.100.10:8080/api\"")
         }
 
         getByName("release") {
