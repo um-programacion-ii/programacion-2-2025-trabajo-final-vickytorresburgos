@@ -1,0 +1,46 @@
+# ---------------------------------------------------------------------------------
+# Este es el Docker Compose principal para el desarrollo del backend.
+# Spring Boot ('spring-boot-docker-compose') lo iniciará automáticamente.
+# ---------------------------------------------------------------------------------
+services:
+  mysql:
+    image: mysql:8.2.0
+    container_name: mysql-trabajo-final # Nombre del contenedor
+    environment:
+      - MYSQL_DATABASE=trabajoFinal
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=caching_sha2_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  proxy-app:
+    build:
+        context: ./proxy
+        dockerfile: src/main/docker/Dockerfile
+    container_name: alumno-proxy
+    ports:
+      - "8081:8081"
+    extra_hosts:
+      - "kafka:192.168.194.250"
+      - "redis:192.168.194.250"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_DATA_REDIS_HOST=redis
+
+  backend-app:
+    build:
+      context: ./backend
+      dockerfile: src/main/docker/Dockerfile
+    container_name: alumno-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - proxy-app
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/trabajoFinal?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+      - APPLICATION_PROXY_URL=http://proxy-app:8081
+      - TOKEN_JWT_CATEDRA=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2aWN0b3JpYXRvcnJlc2J1cmdvcyIsImV4cCI6MTc2ODM0MjgyNSwiYXV0aCI6IlJPTEVfVVNFUiIsImlhdCI6MTc2NTc1MDgyNX0.CL0kNtHEzgrQunOHDDuE347bX7pv7OlPJHCjaufrPayZXJZCg9im_m8Gv1UgIEuhwVQjUvNUpJ-J3XolG-OLHw
+

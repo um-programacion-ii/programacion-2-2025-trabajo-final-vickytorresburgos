@@ -32,7 +32,7 @@ public class EventoRepositoryAdapter implements EventoRepositoryPort {
         EventoEntity entityToSave;
 
         if (existingOpt.isPresent()) {
-            EventoEntity existing = existingOpt.get();
+            EventoEntity existing = existingOpt.orElseThrow();
 
             existing.setTitulo(incomingEntity.getTitulo());
             existing.setResumen(incomingEntity.getResumen());

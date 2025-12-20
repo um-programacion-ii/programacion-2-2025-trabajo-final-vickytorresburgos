@@ -21,9 +21,9 @@ object NetworkClient {
         }
 
         install(HttpTimeout) {
-            requestTimeoutMillis = 15000
-            requestTimeoutMillis = 15000
-            requestTimeoutMillis = 15000
+            requestTimeoutMillis = 90000
+            requestTimeoutMillis = 90000
+            requestTimeoutMillis = 90000
         }
         defaultRequest {
             url(BASE_URL)

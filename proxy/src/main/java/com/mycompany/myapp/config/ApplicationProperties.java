@@ -29,6 +29,16 @@ public class ApplicationProperties {
             this.topic = topic;
         }
     }
+
+    private String backendUrl;
+
+    public String getBackendUrl() {
+        return backendUrl;
+    }
+
+    public void setBackendUrl(String backendUrl) {
+        this.backendUrl = backendUrl;
+    }
     // jhipster-needle-application-properties-property
 
     // jhipster-needle-application-properties-property-getter

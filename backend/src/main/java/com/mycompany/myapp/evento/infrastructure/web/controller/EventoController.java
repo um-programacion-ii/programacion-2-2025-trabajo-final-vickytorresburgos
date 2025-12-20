@@ -9,6 +9,7 @@ import com.mycompany.myapp.repository.AsientoVendidoRepository;
 import com.mycompany.myapp.service.AsientoMapaService;
 import com.mycompany.myapp.evento.infrastructure.web.dto.EventoDTO;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
+import io.netty.util.internal.logging.Log4J2LoggerFactory;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -173,7 +174,7 @@ public class EventoController {
         Optional<EventoDTO> eventoDTO = eventoService.findOne(id);
 
         if (eventoDTO.isPresent()) {
-            EventoDTO dto = eventoDTO.get();
+            EventoDTO dto = eventoDTO.orElseThrow();
 
             int filas = dto.getFilaAsientos() != null ? dto.getFilaAsientos() : 0;
             int columnas = dto.getColumnAsientos() != null ? dto.getColumnAsientos() : 0;
@@ -183,7 +184,7 @@ public class EventoController {
             int cantBloqueadosVigentes = 0;
 
             try {
-                String jsonMapa = asientoMapaService.obtenerMapaAsientosDeCatedra(id);
+                String jsonMapa = asientoMapaService.obtenerMapaAsientosDeCatedra(dto.getEventoCatedraId());
                 JsonNode rootNode = objectMapper.readTree(jsonMapa);
                 JsonNode asientosNode = rootNode.path("asientos");
 
@@ -257,9 +258,13 @@ public class EventoController {
      * @return El String JSON con el mapa de asientos.
      */
     @GetMapping("/{id}/asientos")
-    public ResponseEntity<String> getMapaAsientos(@PathVariable("id") Long id) {
-        String mapaAsientosJson = asientoMapaService.obtenerMapaAsientosDeCatedra(id);
-        return ResponseEntity.ok(mapaAsientosJson);
+    public ResponseEntity<String> getMapaAsientos(@PathVariable Long id) {
+        return eventoService.findOne(id)
+            .map(dto -> {
+                Long idParaElProxy = dto.getEventoCatedraId();
+                String json = asientoMapaService.obtenerMapaAsientosDeCatedra(idParaElProxy);
+                return ResponseEntity.ok(json);
+            })
+            .orElse(ResponseEntity.notFound().build());
     }
-
 }

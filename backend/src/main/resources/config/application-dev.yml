@@ -25,7 +25,8 @@ jpa:
 spring:
   docker:
     compose:
-      enabled: false
+      file: ../docker-compose.yml
+      enabled: true
   data:
     redis:
       host: 192.168.194.250
@@ -41,7 +42,7 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://127.0.0.1:3306/trabajoFinal?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true
+    url: jdbc:mysql://mysql:3306/trabajoFinal?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true
     username: root
     password:
     hikari:
@@ -54,7 +55,7 @@ spring:
         useServerPrepStmts: true
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
-    contexts: dev, faker
+    contexts: dev
   mail:
     host: localhost
     port: 25
@@ -130,4 +131,4 @@ feign:
   client:
     config:
       proxyService:
-        url: http://127.0.0.1:8081
+        url: http://proxy-app:8081

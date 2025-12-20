@@ -2,6 +2,7 @@ package com.mycompany.myapp.consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,7 +16,8 @@ public class KafkaConsumerService {
 
     private final RestTemplate restTemplate;
 
-    private final String BACKEND_URL = "http://localhost:8080/api/notificaciones/evento-actualizado";
+    @Value("${application.backend-url}")
+    private String BACKEND_URL;
 
     public KafkaConsumerService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -36,13 +38,12 @@ public class KafkaConsumerService {
      * metodo "listener". Se conecta a Kafka y
      * se queda esperando mensajes en el topic "eventos-catedra".
      */
-    @KafkaListener(topics = CATEDRA_TOPIC, groupId = CATEDRA_GROUP_ID)
     public void consume(String message) throws IOException {
-        try{
-            restTemplate.postForLocation(BACKEND_URL, null);
-            log.info("Notificacion enviada el backend correctamente");
+        try {
+            restTemplate.postForLocation(BACKEND_URL + "/api/notificaciones/evento-actualizado", null);
+            log.info("Notificación enviada al backend correctamente");
         } catch (Exception e) {
-            log.error("Error al notificar al backend: {}", e.getMessage());
+            log.error("Error al notificar al backend en {}: {}", BACKEND_URL, e.getMessage());
         }
     }
 }
