@@ -60,8 +60,11 @@ public class AccountResource {
         if (isPasswordLengthInvalid(managedUserVM.getPassword())) {
             throw new InvalidPasswordException();
         }
+        if (managedUserVM.getLangKey() == null) {
+            managedUserVM.setLangKey("es");
+        }
         User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
-        mailService.sendActivationEmail(user);
+//        mailService.sendActivationEmail(user);
     }
 
     /**

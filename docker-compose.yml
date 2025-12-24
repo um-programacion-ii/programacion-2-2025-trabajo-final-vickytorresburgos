@@ -42,5 +42,4 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/trabajoFinal?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
       - APPLICATION_PROXY_URL=http://proxy-app:8081
-      - TOKEN_JWT_CATEDRA=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2aWN0b3JpYXRvcnJlc2J1cmdvcyIsImV4cCI6MTc2ODM0MjgyNSwiYXV0aCI6IlJPTEVfVVNFUiIsImlhdCI6MTc2NTc1MDgyNX0.CL0kNtHEzgrQunOHDDuE347bX7pv7OlPJHCjaufrPayZXJZCg9im_m8Gv1UgIEuhwVQjUvNUpJ-J3XolG-OLHw
-
+      - TOKEN_JWT_CATEDRA=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2aWN0b3JpYXRvcnJlc2J1cmdvcyIsImV4cCI6MTc2OTAzMjIxMiwiYXV0aCI6IlJPTEVfVVNFUiIsImlhdCI6MTc2NjQ0MDIxMn0.HhynQbIni1r8H3-dZ8i1Z2skWHtW9JrSKOwiIDV3tk6-njoatIBdB4tFgxQZWOXmdotYIGNdu9n9aM010RGSeQ
