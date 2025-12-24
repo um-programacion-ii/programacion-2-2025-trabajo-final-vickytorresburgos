@@ -32,10 +32,11 @@ import org.mycompany.myapp.ui.EventoDetailScreen
 import org.mycompany.myapp.ui.HomeScreen
 import org.mycompany.myapp.ui.LoginScreen
 import org.mycompany.myapp.ui.MisComprasScreen
+import org.mycompany.myapp.ui.RegisterScreen
 import org.mycompany.myapp.ui.VentaExitosaScreen
 
 enum class AppScreen {
-    LOGIN, HOME, DETAIL, ASIENTOS, CARGA_NOMBRES, CONFIRMACION, MIS_COMPRAS, VENTA_EXITOSA
+    LOGIN, REGISTER, HOME, DETAIL, ASIENTOS, CARGA_NOMBRES, CONFIRMACION, MIS_COMPRAS, VENTA_EXITOSA
 }
 
 @Composable
@@ -59,7 +60,27 @@ fun App() {
 
         when (currentScreen) {
             AppScreen.LOGIN -> {
-                LoginScreen(onLoginSuccess = { token -> savedToken = token; currentScreen = AppScreen.HOME })
+                LoginScreen(
+                    onLoginSuccess = { token ->
+                        savedToken = token
+                        currentScreen = AppScreen.HOME
+                    },
+                    // 2. CONEXIÓN CON LA PANTALLA DE REGISTRO
+                    onNavigateToRegister = {
+                        currentScreen = AppScreen.REGISTER
+                    }
+                )
+            }
+            // 3. PANTALLA DE REGISTRO
+            AppScreen.REGISTER -> {
+                RegisterScreen(
+                    onRegisterSuccess = {
+                        currentScreen = AppScreen.LOGIN
+                    },
+                    onNavigateBack = {
+                        currentScreen = AppScreen.LOGIN
+                    }
+                )
             }
             AppScreen.HOME -> {
                 HomeScreen(

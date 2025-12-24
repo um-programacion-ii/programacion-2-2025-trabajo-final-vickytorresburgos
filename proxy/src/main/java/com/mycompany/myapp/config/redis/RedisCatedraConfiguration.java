@@ -28,8 +28,7 @@ public class RedisCatedraConfiguration {
 
     /**
      * Crea un RedisTemplate que solo usa Strings.
-     * El mapa de asientos en el Redis de Cátedra es probablemente un JSON (String)
-     * o una estructura de Hash simple. Un StringRedisTemplate es lo más seguro.
+     * El mapa de asientos en el Redis de Cátedra es un JSON (String)
      */
     @Bean("catedraRedisTemplate")
     public StringRedisTemplate stringRedisTemplate() {
