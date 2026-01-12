@@ -1,0 +1,75 @@
+/**
+ * Entidad que replica localmente los datos de un evento
+ * proveniente del servicio de la Cátedra.
+ */
+entity Evento {
+  eventoCatedraId Long required unique,
+  titulo String required,
+  resumen String,
+  descripcion String,
+  fecha Instant,
+  direccion String,
+  imagen String,
+  filaAsientos Integer,
+  columnAsientos Integer,
+  precioEntrada BigDecimal,
+  eventoTipoNombre String,
+  eventoTipoDescripcion String
+}
+
+/**
+ * Entidad para los presentadores u organizadores de un Evento.
+ */
+entity Integrante {
+  nombre String,
+  apellido String,
+  identificacion String
+}
+
+/**
+ * Entidad que registra una Venta (exitosa o fallida)
+ * realizada por un usuario.
+ */
+entity Venta {
+  ventaCatedraId Long,
+  fechaVenta Instant required,
+  precioVenta BigDecimal required,
+  resultado Boolean required,
+  descripcion String,
+  cantidadAsientos Integer
+}
+
+/**
+ * Entidad que detalla un asiento específico vendido
+ * como parte de una Venta.
+ */
+entity AsientoVendido {
+  fila Integer required,
+  columna Integer required,
+  persona String,
+  estado String
+}
+
+relationship OneToMany {
+  Evento{integrantes} to Integrante{evento},
+  Venta{asientos} to AsientoVendido{venta}
+}
+
+relationship ManyToOne {
+  /**
+   * Se agrega 'with builtInEntity' para linkear
+   * a la entidad User de JHipster.
+   */
+  Venta{user} to User with builtInEntity,
+
+  /**
+   * Una Venta debe estar asociada a un Evento local.
+   */
+  Venta{evento} to Evento
+}
+
+// --- CONFIGURACIÓN GLOBAL ---
+
+dto * with mapstruct
+service * with serviceImpl
+paginate Evento, Venta with pagination

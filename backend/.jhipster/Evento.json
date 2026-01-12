@@ -1,0 +1,73 @@
+{
+  "annotations": {
+    "changelogDate": "20251110230557"
+  },
+  "applications": "*",
+  "documentation": "Entidad que replica localmente los datos de un evento\\nproveniente del servicio de la Cátedra.",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "eventoCatedraId",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required", "unique"]
+    },
+    {
+      "fieldName": "titulo",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "resumen",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "descripcion",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "fecha",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "direccion",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "imagen",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "filaAsientos",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "columnAsientos",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "precioEntrada",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "eventoTipoNombre",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "eventoTipoDescripcion",
+      "fieldType": "String"
+    }
+  ],
+  "name": "Evento",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "integrante",
+      "otherEntityRelationshipName": "evento",
+      "relationshipName": "integrantes",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}
